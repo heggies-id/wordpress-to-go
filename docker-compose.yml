@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: your_mysql_root_password
+      MYSQL_DATABASE: your_wordpress_database
+      MYSQL_USER: your_wordpress_user
+      MYSQL_PASSWORD: your_wordpress_password
+
+  wordpress:
+    image: wordpress:5.6-php7.4-fpm-alpine
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_NAME: your_wordpress_database
+      WORDPRESS_DB_USER: your_wordpress_user
+      WORDPRESS_DB_PASSWORD: your_wordpress_password
+    depends_on:
+      - mysql
+
+  nginx:
+    image: nginx:stable-alpine3.17-slim
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx-config:/etc/nginx/conf.d
+      - wordpress_data:/var/www/html
+    depends_on:
+      - wordpress
+
+volumes:
+  mysql_data:
+  wordpress_data:
