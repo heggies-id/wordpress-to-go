@@ -32,11 +32,13 @@ services:
       - mysql
 
   nginx:
-    image: nginx:stable-alpine3.17-slim
+    image: nginx:stable-alpine3.17
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx-config:/etc/nginx/conf.d
+      - ./certs:/etc/nginx/certs
       - wordpress_data:/var/www/html
     depends_on:
       - wordpress
