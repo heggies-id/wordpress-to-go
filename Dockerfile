@@ -24,8 +24,18 @@ RUN apt-get update && \
 # Configure Nginx
 COPY nginx-config/default.conf /etc/nginx/sites-available/default.conf
 
+RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/
+
+# Download and extract WordPress
+RUN curl -O https://wordpress.org/wordpress-5.6.12.tar.gz && \
+    tar -zxvf wordpress-5.6.12.tar.gz -C /var/www/html/ && \
+    rm wordpress-5.6.12.tar.gz
+
+RUN chown -R www-data:www-data /var/www/html/wordpress
+
 # Start PHP-FPM and Nginx
-CMD service php7.4-fpm start && nginx -g "daemon off;"
+CMD service php7.4-fpm start && service nginx start && tail -f /dev/null
 
 # Expose ports
 EXPOSE 80
+VOLUME /var/www/html/wordpress
