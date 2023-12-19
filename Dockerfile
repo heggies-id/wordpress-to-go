@@ -26,8 +26,8 @@ RUN echo "server {" > /etc/nginx/sites-available/default.conf && \
     echo "    listen 80;" >> /etc/nginx/sites-available/default.conf && \
     echo "    server_name localhost;" >> /etc/nginx/sites-available/default.conf && \
     echo "    client_max_body_size 20M;" >> /etc/nginx/sites-available/default.conf && \
-    echo "    root /var/www/html/wordpress;" >> /etc/nginx/sites-available/default.conf && \
-    echo "    index index.php index.html index.htm;" >> /etc/nginx/sites-available/default.conf && \
+    echo "    root /var/www/html;" >> /etc/nginx/sites-available/default.conf && \
+    echo "    index index.php index.html index.htm index.nginx-debian.html;" >> /etc/nginx/sites-available/default.conf && \
     echo "    location / {" >> /etc/nginx/sites-available/default.conf && \
     echo "        try_files \$uri \$uri/ /index.php?\$args;" >> /etc/nginx/sites-available/default.conf && \
     echo "    }" >> /etc/nginx/sites-available/default.conf && \
@@ -56,16 +56,11 @@ RUN echo "server {" > /etc/nginx/sites-available/default.conf && \
 
 RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/
 
-# Download and extract WordPress
-RUN curl -O https://wordpress.org/wordpress-5.6.12.tar.gz && \
-    tar -zxvf wordpress-5.6.12.tar.gz -C /var/www/html/ && \
-    rm wordpress-5.6.12.tar.gz
-
-RUN chown -R www-data:www-data /var/www/html/wordpress
+RUN chown -R www-data:www-data /var/www/html
 
 # Start PHP-FPM and Nginx
 CMD service php7.4-fpm start && service nginx start && tail -f /dev/null
 
 # Expose ports
 EXPOSE 80
-VOLUME /var/www/html/wordpress
+VOLUME /var/www/html
